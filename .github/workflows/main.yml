@@ -10,6 +10,11 @@ on:
 
   workflow_dispatch:
   
+env:
+  HOST: ${{ secrets.SERVER_SSH_HOST }}
+  USERNAME: ${{ secrets.SERVER_SSH_USERNAME }}
+  KEY: ${{ secrets.SERVER_SSH_KEY }}
+  
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,9 +25,13 @@ jobs:
       - name: SSH commands using password
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.SERVER_SSH_HOST }} # 서버  ip주소
-          username: ${{ secrets.SERVER_SSH_USERNAME }} # 서버 유저이름
-          key: ${{ secrets.SERVER_SSH_KEY }} # AWS 연결 키
-          script: |
-            pwd
-            sudo mkdir /HI
+          host: ${{ env.HOST }} # 서버  ip주소
+          username: ${{ env.USERNAME }} # 서버 유저이름
+          key: ${{ env.KEY }} # AWS 연결 키
+
+      - name: Deploy Code
+        run: |
+          ssh ${{ env.USERNAME }}@${{ env.HOST }} << EOF
+            cd TTWordServer
+            git pull
+          EOF
