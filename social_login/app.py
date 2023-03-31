@@ -9,6 +9,7 @@ app.secret_key = os.urandom(12)
 
 oauth = OAuth(app)
 
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -28,14 +29,13 @@ def google():
 
     # Redirect to google_auth function
     redirect_uri = url_for('google_auth', _external=True)
-    print(redirect_uri)
     return oauth.google.authorize_redirect(redirect_uri)
 
 @app.route('/google/auth/')
 def google_auth():
     token = oauth.google.authorize_access_token()
-    user = oauth.google.parse_id_token(token)
-    print(" Google User ", user)
+    # DB에 저장 token['userinfo'] 이용하여
+    print(token['userinfo'])
     return redirect('/')
 
 if __name__ == '__main__':
